@@ -5,16 +5,16 @@ category: info
 
 docname: draft-sdawkins-avtcore-sdp-rtp-quic-issues-latest
 v: 3
-area: AREA
-workgroup: WG Working Group
+area: "Applications and Real-Time"
+workgroup: "Audio/Video Transport Core Maintenance"
 keyword: Internet-Draft
 venue:
-  group: WG
-  type: Working Group
-  mail: WG@example.com
-  arch: https://example.com/WG
-  github: USER/REPO
-  latest: https://example.com/LATEST
+  group: "Audio/Video Transport Core Maintenance"
+  type: "Working Group"
+  mail: "avt@ietf.org"
+  arch: "https://mailarchive.ietf.org/arch/browse/avt/"
+  github: "SpencerDawkins/sdp-rtp-quic-issues"
+  latest: "https://SpencerDawkins.github.io/sdp-rtp-quic-issues/draft-sdawkins-avtcore-sdp-rtp-quic-issues.html"
 
 author:
  -
