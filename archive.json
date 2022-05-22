@@ -1,0 +1,552 @@
+{
+  "magic": "E!vIA5L86J2I",
+  "timestamp": "2022-05-22T01:22:52.748930+00:00",
+  "repo": "SpencerDawkins/sdp-rtp-quic-issues",
+  "labels": [
+    {
+      "name": "bug",
+      "description": "Something isn't working",
+      "color": "d73a4a"
+    },
+    {
+      "name": "documentation",
+      "description": "Improvements or additions to documentation",
+      "color": "0075ca"
+    },
+    {
+      "name": "duplicate",
+      "description": "This issue or pull request already exists",
+      "color": "cfd3d7"
+    },
+    {
+      "name": "enhancement",
+      "description": "New feature or request",
+      "color": "a2eeef"
+    },
+    {
+      "name": "help wanted",
+      "description": "Extra attention is needed",
+      "color": "008672"
+    },
+    {
+      "name": "good first issue",
+      "description": "Good for newcomers",
+      "color": "7057ff"
+    },
+    {
+      "name": "invalid",
+      "description": "This doesn't seem right",
+      "color": "e4e669"
+    },
+    {
+      "name": "question",
+      "description": "Further information is requested",
+      "color": "d876e3"
+    },
+    {
+      "name": "wontfix",
+      "description": "This will not be worked on",
+      "color": "ffffff"
+    },
+    {
+      "name": "Presented to WG",
+      "description": "Has been presented to a working group",
+      "color": "AFB0F0"
+    },
+    {
+      "name": "Mailing list",
+      "description": "Discussed on mailing list",
+      "color": "B3CB09"
+    },
+    {
+      "name": "Solution proposed",
+      "description": "",
+      "color": "d4c5f9"
+    }
+  ],
+  "issues": [
+    {
+      "number": 1,
+      "id": "I_kwDOHDTni85GQCGM",
+      "title": "Signaling media-friendly congestion control?",
+      "url": "https://github.com/SpencerDawkins/sdp-rtp-quic-issues/issues/1",
+      "state": "OPEN",
+      "author": "SpencerDawkins",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [
+        "Presented to WG",
+        "Solution proposed"
+      ],
+      "body": "Most of our experience with QUIC has been with HTTP/3, which is, in general, not application-limited, so NewReno or BBRv2 seem to work just fine, and the choice of congestion control mechanisms is up to the sender - receivers are only responsible for ACKing.\r\n\r\nAVTCORE participants testing with NewReno, SCReAM, and SCReAM+NewReno - presentation at February 2022 AVTCORE interim meeting. \r\n\r\nAre we going to need to negotiate media congestion control between senders and receivers? (\"do we need receivers to behave differently when different media-friendly congestion control mechanisms are available?\")\r\n\r\nAnd, if so, the SDP would likely need to reflect that different behavior. \r\n\r\n\r\n",
+      "createdAt": "2022-02-07T19:26:47Z",
+      "updatedAt": "2022-05-17T18:22:05Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "fluffy",
+          "authorAssociation": "NONE",
+          "body": "If we don't negotiate it, it seems like it might be very hard to upgrade to new congestion mechanisms in the future. I realize that QUIC might negotiate it but the signaling need to direct you to the correct server before before media even starts. For example when rolling out version, you might talk to the client, see what it supports, and the if it does only the old, send it to main system, but if it does new, send it to a something that supports new and gateways media to old system. This makes it much easier to to do incremental deployment before all part of the cloud side of the system support the new thing. ",
+          "createdAt": "2022-03-25T01:08:45Z",
+          "updatedAt": "2022-03-25T01:08:45Z"
+        },
+        {
+          "author": "suhasHere",
+          "authorAssociation": "NONE",
+          "body": "I wonder if we need to qualify it further saying , client/sender provides its supported congestion control algorithms and server picks one based on some priority and implementation status ? It moves it more into declarative land .",
+          "createdAt": "2022-03-25T01:26:45Z",
+          "updatedAt": "2022-03-25T01:26:45Z"
+        },
+        {
+          "author": "SpencerDawkins",
+          "authorAssociation": "OWNER",
+          "body": "We'ved noted that it's possible to use a different APLN (say, \"mq\", for \"media over QUIC\"), so that the connection is to a different application, that won't try to use an unhelpful congestion controller on media traffic. \r\n\r\nSo our next question is whether this would work for everyone, or whether we still need to signal something in SDP. ",
+          "createdAt": "2022-05-16T15:43:33Z",
+          "updatedAt": "2022-05-16T15:43:33Z"
+        }
+      ]
+    },
+    {
+      "number": 2,
+      "id": "I_kwDOHDTni85GQCij",
+      "title": "Feedback from RTCP, QUIC, some of each, or something else?",
+      "url": "https://github.com/SpencerDawkins/sdp-rtp-quic-issues/issues/2",
+      "state": "OPEN",
+      "author": "SpencerDawkins",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [
+        "Presented to WG"
+      ],
+      "body": "From @rjb1000, Richard Bradbury, in private email: \r\n\r\n> **RTCP-based feedback.** This is important for congestion control, but is becoming increasingly relevant to ARQ-based retransmission too. For example, the RIST Simple Profile extends RTP/AVPF's bitmask-based retransmission request (generic NACK, carried in an RTPFB RTCP message) with its own efficient range-based retransmission request (carried in an APP RTCP message). The receiver is then free to use the ARQ message that most efficiently describes the pattern of packet loss it has experienced. (It's probably up to the Video Services Forum to formally register an AVP profile name for this, but I thought it worth mentioning.)",
+      "createdAt": "2021-09-20T20:27:04Z",
+      "updatedAt": "2022-03-25T10:16:34Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "SpencerDawkins",
+          "authorAssociation": "OWNER",
+          "body": "There's definitely an opportunity to rethink what's possible with feedback to RTP senders, whether that's using RTCP roughly unchanged today, mechanisms like the one you mention here, feedback based on QUIC feedback, or some combination of these, and we might not all agree on the same winner. (This is definitely worth more discussion!).",
+          "createdAt": "2021-09-20T20:59:19Z",
+          "updatedAt": "2021-09-20T20:59:19Z"
+        },
+        {
+          "author": "SpencerDawkins",
+          "authorAssociation": "OWNER",
+          "body": "One possibility, in -00 of the draft, is the possibility of replacing RTP Round Trip Time (RTT) measurement with something like a proposed QUIC extension for timestamps ([[I-D.huitema-quic-ts](https://spencerdawkins.github.io/sdp-rtp-quic/draft-dawkins-avtcore-sdp-rtp-quic.html#I-D.huitema-quic-ts)]) that could be used to measure one-way delays.",
+          "createdAt": "2022-03-23T21:43:20Z",
+          "updatedAt": "2022-03-23T21:43:20Z"
+        },
+        {
+          "author": "fluffy",
+          "authorAssociation": "NONE",
+          "body": "If all you have is loss information from RTP, but it is over a reliable stream in QUIC, you have no information about the actually losses. I don't know how you solve all this but I think the rate controller for media needs some information from the QUIC transport. One option might be just have QUIC directly pass the rate, loss,  and RTT estimates up to the application. ",
+          "createdAt": "2022-03-25T01:11:14Z",
+          "updatedAt": "2022-03-25T01:11:14Z"
+        },
+        {
+          "author": "suhasHere",
+          "authorAssociation": "NONE",
+          "body": "There are 2 different problems here - client side and server side. \r\nServer side RTCP is more complicated esp when its aggregating the feedback across the session/conference. Client side rtcp feedback is in a way local feedback and much more smaller problem to solve.\r\n\r\nThe question probably boils down to \r\n1- Does server implement RTCP FB based state machine at all\r\n2- Does server support only RTP\r\n\r\nIn the case 2 , QUIC transport feedback loop might be is all needed for the servers and clients to act/react and a few adapted feedabck message types cna be sent over QUIC streams to share that state between the client and server\r\n\r\nIn case-1, the feedback loop from QUIC transport needs to be some how mapped to RTCP state machine and that in turns triggers RTCP FB payloads being sent as a result of it. \r\n\r\nIt just bloats up the complexity here.\r\n\r\nMay be its time to rethink RTCP feedback with new eyes when using over QUIC ? ",
+          "createdAt": "2022-03-25T01:35:53Z",
+          "updatedAt": "2022-03-25T01:35:53Z"
+        },
+        {
+          "author": "rjb1000",
+          "authorAssociation": "NONE",
+          "body": "The Use Case I have in mind (RTP over the QUIC `DATAGRAM` frame) is using QUIC as an _unreliable_ transport layer. Frames of this type are acknowledged in the usual way by the receiving party, but QUIC makes no attempt to recover from losses. The responsibility for loss recovery is therefore transferred to a higher layer. I think that packet loss detected by QUIC could be useful to an application layer loss recovery mechanism as well as driving the media rate controller. Either way, there is value in exposing this information to the application layer.\r\n\r\nRTCP can, of course, operate in splendid isolation from the layer below, relying solely on its own algorithm and timeouts. But, thinking aloud, loss information exposed by QUIC could potentially provide a useful additional signal of packet loss. Not sure if it would be more timely or not, though. Agree it adds to the complexity of the state machine, and maybe it's not worth the candle in the final assessment. Sounds like something that could be experimented with to learn more.",
+          "createdAt": "2022-03-25T10:16:07Z",
+          "updatedAt": "2022-03-25T10:16:34Z"
+        }
+      ]
+    },
+    {
+      "number": 3,
+      "id": "MDU6SXNzdWUxMTc4NjExMTE2",
+      "title": "Distinguishing between mappings onto streams and onto datagrams?",
+      "url": "https://github.com/SpencerDawkins/sdp-rtp-quic-issues/issues/3",
+      "state": "OPEN",
+      "author": "SpencerDawkins",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [
+        "Presented to WG",
+        "Solution proposed"
+      ],
+      "body": "From @csperkins (Colin Perkins): \r\n\r\n> Given that there are likely to be several possible mappings, e.g., over streams vs. over datagrams, I wonder whether there should be another layer in the proto to indicate this?  QUIC/DGRAM/RTP/SAVP",
+      "createdAt": "2021-09-09T22:42:42Z",
+      "updatedAt": "2022-05-17T17:42:23Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "SpencerDawkins",
+          "authorAssociation": "OWNER",
+          "body": "@csperkins, I'll ask this question on a mailing list as soon as I figure out which mailing list I should be asking on, but I suspect the answer is going to be \"yes\". \r\n\r\nStealing language from the Berkeley sockets API, I suggest DGRAM (as in Colin's example) and STREAM, as the distinguishing terms, if we need to make this change. ",
+          "createdAt": "2021-09-09T22:44:10Z",
+          "updatedAt": "2021-09-09T22:50:00Z"
+        },
+        {
+          "author": "juberti",
+          "authorAssociation": "NONE",
+          "body": "this seems pretty reasonable to prevent future ambiguity",
+          "createdAt": "2022-02-04T23:18:42Z",
+          "updatedAt": "2022-02-04T23:18:42Z"
+        },
+        {
+          "author": "fluffy",
+          "authorAssociation": "NONE",
+          "body": "+1 uberti ",
+          "createdAt": "2022-03-25T01:11:50Z",
+          "updatedAt": "2022-03-25T01:11:50Z"
+        },
+        {
+          "author": "suhasHere",
+          "authorAssociation": "NONE",
+          "body": "+1 love the clear distinction . Just to add a note on  bundle, all m= sections in the bundle group are mapped the same way as a clarification point",
+          "createdAt": "2022-03-25T01:25:07Z",
+          "updatedAt": "2022-03-25T01:25:07Z"
+        }
+      ]
+    },
+    {
+      "number": 4,
+      "id": "MDU6SXNzdWUxMTc4NjE0MTY0",
+      "title": "Will we need a QUIC adaptation layer for RTP/RTCP, similar to the one defined for HTTP/3?",
+      "url": "https://github.com/SpencerDawkins/sdp-rtp-quic-issues/issues/4",
+      "state": "OPEN",
+      "author": "SpencerDawkins",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [
+        "Presented to WG",
+        "Mailing list"
+      ],
+      "body": " * When QUIC establishes connections, it uses IP addresses but then expects applications to use connection IDs to refer to connections, even if the underlying IP addresses change because of NAT binding, and even if the QUIC implementation performs QUIC connection migration itself, so the underlying IP addresses change. RTP applications expect to use IP addresses, not QUIC connection IDs. Must we specify an RTP/RTCP adaptation layer, similar to {{I-D.ietf-quic-http}} for HTTP/3?",
+      "createdAt": "2021-09-09T22:23:54Z",
+      "updatedAt": "2022-05-12T00:09:41Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "juberti",
+          "authorAssociation": "NONE",
+          "body": "This is pretty interesting, because I can imagine a lot of applications not wanting to use IP addresses if QUIC is going to take care of all the details. I'll have to think about what this might mean in practice.",
+          "createdAt": "2022-02-04T23:20:12Z",
+          "updatedAt": "2022-02-04T23:20:12Z"
+        },
+        {
+          "author": "SpencerDawkins",
+          "authorAssociation": "OWNER",
+          "body": "@juberti - a lot of us need to think about this! \r\n\r\nI'm not the wizard of QUIC, but offhand, I can think of both connection migration and multipath that would expect an application to understand QUIC connection IDs, and wouldn't work if the application thinks it's only talking to one source-destination IP address pair, and at that point, I stopped trying to think of more things that wouldn't work. :fearful:",
+          "createdAt": "2022-02-05T00:44:48Z",
+          "updatedAt": "2022-02-05T00:47:29Z"
+        },
+        {
+          "author": "juberti",
+          "authorAssociation": "NONE",
+          "body": "why does the application need to care though? It can just pretend it's talking to a single IP:port over a virtual connection (similar to how ICE is handled) and let the quic implementation handle all the details.",
+          "createdAt": "2022-02-05T01:03:22Z",
+          "updatedAt": "2022-02-05T01:03:22Z"
+        },
+        {
+          "author": "SpencerDawkins",
+          "authorAssociation": "OWNER",
+          "body": "@juberti, I agree with your statement, and ISTM that we need to talk about this when we're talking about the functionality of the \"RTP over QUIC\" encapsulation layer. \r\n\r\nI was using the term **\"QUIC adaptation layer for RTP/RTCP\"** to describe something on top of the QUIC implementation (if the \"QUIC implementation\" is roughly doing [RFC 9000](https://www.rfc-editor.org/rfc/rfc9000.html) plus extensions), similar to [HTTP/3](https://datatracker.ietf.org/doc/draft-ietf-quic-http/). Does that make sense?",
+          "createdAt": "2022-02-05T19:34:55Z",
+          "updatedAt": "2022-02-05T19:34:55Z"
+        },
+        {
+          "author": "juberti",
+          "authorAssociation": "NONE",
+          "body": "Sure, we definitely need an adaptation layer. I'm not sure if that's distinct from rtp-over-quic, but yes, somewhere we need to explain all the nuances of how sending over QUIC is different than sending over straight UDP. I think most of the actual details related to IP addresses will be pretty straightforward though.",
+          "createdAt": "2022-02-07T18:34:03Z",
+          "updatedAt": "2022-02-07T18:34:03Z"
+        },
+        {
+          "author": "fluffy",
+          "authorAssociation": "NONE",
+          "body": "Lets assume we are sticking to usages of RTP where it is multiplexed with the RTCP or at least all in the same QUIC session. In theses cases I think it would be a huge advantage to abstract away the IP/Port - it would open the door to better things in the future and remove one whole set of pain about V4 to V6 migration. Definitely some details to work out but it might be easier than not doing this. ",
+          "createdAt": "2022-03-25T01:15:13Z",
+          "updatedAt": "2022-03-25T01:15:13Z"
+        },
+        {
+          "author": "suhasHere",
+          "authorAssociation": "NONE",
+          "body": "I can't stop to think of Bundle/multiplexing of multiple m=lines in this cases of sending RTP  application data over QUIC. In a way, one can think QUIC's connectionId to be single Bundle address:port for a bundle group. This will get us away from using ip:address port and bundle negotiation, since we have connectionIds for that sense. Each bundle group gets its own connectionId and we can define an SDP attribute that defined what connetctionId each bundle group belongs too.\r\n\r\nWe need to work out more corner cases, but i seem to agree with both @juberti  and @fluffy  that this is an interesting idea and we should work on it in a design session or something \r\n\r\n@juberti  @fluffy  @SpencerDawkins  thoughts ?",
+          "createdAt": "2022-03-25T01:23:49Z",
+          "updatedAt": "2022-03-25T01:23:49Z"
+        },
+        {
+          "author": "SpencerDawkins",
+          "authorAssociation": "OWNER",
+          "body": "I asked this question on the AVTCORE mailing list, in a thread starting [here](https://mailarchive.ietf.org/arch/msg/avt/13FJa_EFS0l7mog37IdGoBe18UE/).",
+          "createdAt": "2022-05-12T00:09:40Z",
+          "updatedAt": "2022-05-12T00:09:40Z"
+        }
+      ]
+    },
+    {
+      "number": 5,
+      "id": "MDU6SXNzdWUxMTc4NjE0Njcz",
+      "title": "Does double encryption matter for (say) SAVPF?",
+      "url": "https://github.com/SpencerDawkins/sdp-rtp-quic-issues/issues/5",
+      "state": "OPEN",
+      "author": "SpencerDawkins",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [
+        "Presented to WG",
+        "Mailing list",
+        "Solution proposed"
+      ],
+      "body": " * RTP (and RTCP) headers and payloads will be entirely encrypted using QUIC ({{RFC9000}}), as secured by TLS 1.3 handshake ({{RFC9001}}), between QUIC endpoints. It's worth thinking more about how that maps onto expected deployment scenarios like centralized multiparty conferencing, and also whether WebRTC really requires SAVPF with double encryption (i.e. SRTP encryption, and then QUIC encryption). No opinions here yet, just noting the question for now.",
+      "createdAt": "2021-09-09T22:21:56Z",
+      "updatedAt": "2022-05-17T17:19:12Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "SpencerDawkins",
+          "authorAssociation": "OWNER",
+          "body": "From @rjb1000, Richard Bradbury, via private email: \r\n\r\n> **Is QUIC/RTP/SAVP the right profile name?** I wonder if SRTP (as specified in RFC 3711) is rendered obsolete by QUIC given that the latter satisfies the primary security goals of SRTP (confidentiality and integrity). Isn't the simple case really just QUIC/RTP/AVP?\r\n> That then begs the question: **What is the difference between QUIC/RTP/AVPF and QUIC/RTP/SAVPF,** given that security is built into the QUIC transport.",
+          "createdAt": "2021-09-20T19:55:41Z",
+          "updatedAt": "2021-09-20T19:55:41Z"
+        },
+        {
+          "author": "SpencerDawkins",
+          "authorAssociation": "OWNER",
+          "body": "ISTM that the answer to these questions depends a great deal on how much effort we expect people to go to, in order to run \"RTP over QUIC\", and that likely doesn't have a single answer. If a SIP implementation is using RTP/SAVPF today, and is using endpoints that also support QUIC, QUIC/RTP/SAVPF might be appealing (and might allow the use of QUIC/RTP/SAVPF in multipoint conferencing scenarios where some endpoints use QUIC/RTP/SAVPF, and others use RTP/SAVPF). \r\n\r\nIn other scenarios, the assertion that QUIC/RTP/AVPF and RTP/SAVPF provide roughly equivalent protection, so double encryption with QUIC/RTP/SAVPF isn't adding anything, might be attractive. This is definitely an issue that needs more discussion (and, not necessarily, in the context of this draft!)",
+          "createdAt": "2021-09-20T20:21:02Z",
+          "updatedAt": "2021-09-20T20:21:02Z"
+        },
+        {
+          "author": "juberti",
+          "authorAssociation": "NONE",
+          "body": "I'd argue that double encryption is a clear negative, since you'll have 2 HMACs and thereby at least 10 wasted bytes per packet.",
+          "createdAt": "2022-02-04T23:17:31Z",
+          "updatedAt": "2022-02-04T23:17:31Z"
+        },
+        {
+          "author": "SpencerDawkins",
+          "authorAssociation": "OWNER",
+          "body": "Adding a note from @juberti on the AVTCORE mailing list about this: \r\n\r\n>  I think the security aspects discussed in Section 1.5 are a good example of this. At first glance, QUIC/RTP/SAVPF feels a lot like the UDP/TLS/RTP/SAVPF defined in https://www.rfc-editor.org/rfc/rfc5764.html, but the semantics are much different, namely:\r\n> 1) The SRTP encryption process is not used, and instead QUIC's encryption and encapsulation process is used.\r\n> 2) The SAVPF profile is meant to be a hint to downstream consumers, per Section 1.5, rather than a difference in the wire format.\r\n> \r\n> I think it would be good to align with the precedent set in https://www.rfc-editor.org/rfc/rfc7850.html, which indicates that the right profile in all cases would be QUIC/RTP/AVPF. Any behaviors required of the middlebox seem like they should be indicated by some other explicit attribute given the ambiguity associated with overloading the profile.",
+          "createdAt": "2022-02-05T00:17:33Z",
+          "updatedAt": "2022-02-05T00:17:33Z"
+        },
+        {
+          "author": "SpencerDawkins",
+          "authorAssociation": "OWNER",
+          "body": "@rjb1000 and @juberti - as discussed previously in this thread, I'm yanking the SRTP AVP profiles from the next version of this draft. \r\n\r\nBecause people keep talking to me about wanting to use QUIC-level feedback to the sender, and even suppress similar RTCP-level feedback for efficiency's sake, I'm adding registration of QUIC/RTP/AVP, recognizing that this may not be useful in the short term, and could easily be yanked from a future version of the draft,, based on how QUIC/RTP/ encapsulation plays out in the future. \r\n\r\nI'm working on a PR for this, and will ask for your feedback on it before committing. I will be especially in your thoughts about the new section on \"Rationale on the Choice of AVP Profiles in the Context of RTP Encapsulation in QUIC\". \r\n\r\nAnd thank you both for your feedback so far!",
+          "createdAt": "2022-02-26T14:24:47Z",
+          "updatedAt": "2022-02-26T14:40:26Z"
+        },
+        {
+          "author": "suhasHere",
+          "authorAssociation": "NONE",
+          "body": "QUIC/RTP/AVP, QUIC/RTP/AVPF are good candidates and I agree with @juberti  as well as it is hop-by-hop and srtp/dtls-srtp is not adding value in this case. \r\n\r\nAlthough I feel the AVPF variant will be bit tricky when considering RTCP.\r\n\r\nThe only caveat I can think is if and when there are QUIC terminators in between, the hop-by-hop (between the client and sfu) will be broken and that's where DTLS-SRTP might be useful, i think.\r\nMay be its just a note in the security consideration section and nothing needs to be done here.",
+          "createdAt": "2022-03-25T01:17:46Z",
+          "updatedAt": "2022-03-25T01:36:50Z"
+        },
+        {
+          "author": "SpencerDawkins",
+          "authorAssociation": "OWNER",
+          "body": "I asked this question on the AVTCORE mailing list, in a thread starting [here](https://mailarchive.ietf.org/arch/msg/avt/En0dxjuythtBb1YRgONI1JmAYx8/). ",
+          "createdAt": "2022-05-11T22:51:27Z",
+          "updatedAt": "2022-05-11T22:51:27Z"
+        }
+      ]
+    },
+    {
+      "number": 6,
+      "id": "I_kwDOHDTni85GQEPw",
+      "title": "RTP over QUIC topologies",
+      "url": "https://github.com/SpencerDawkins/sdp-rtp-quic-issues/issues/6",
+      "state": "OPEN",
+      "author": "aboba",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [
+        "Presented to WG"
+      ],
+      "body": "How does RTP over QUIC fit into RFC 7667?\r\n\r\nIt seems to me that RTP over QUIC can handle any of the RTP topologies, except for multicast. \r\n\r\nIn particular, RTP over QUIC can support P2P as well as conferencing topologies. The implication is that we are talking about RTP directly over QUIC, *not* RTP over WebTransport (which is client/server only). \r\n\r\nAlthough it is possible that SIP might run over WebTransport, that's a different problem. \r\n\r\n",
+      "createdAt": "2022-02-23T03:15:52Z",
+      "updatedAt": "2022-04-01T15:26:55Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "fluffy",
+          "authorAssociation": "NONE",
+          "body": "That seems about right but just thinking if you are setting up a QUIC connection using ICE, you have to be able to demux and seems that might run into the problem there is no guarantee that works in future version of QUIC. \r\n",
+          "createdAt": "2022-03-25T01:04:12Z",
+          "updatedAt": "2022-03-25T01:04:12Z"
+        }
+      ]
+    },
+    {
+      "number": 7,
+      "id": "I_kwDOHDTni85GQEc8",
+      "title": "Exchange of Fingerprints",
+      "url": "https://github.com/SpencerDawkins/sdp-rtp-quic-issues/issues/7",
+      "state": "OPEN",
+      "author": "aboba",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [
+        "Presented to WG"
+      ],
+      "body": "In the [P2P QUIC Origin Trial](https://developers.google.com/web/updates/2019/01/rtcquictransport-api), we assumed an authentication model similar to DTLS - the peers use self-signed certificates, exchanging fingerprints for validation.  I *think* this implies similar active/active-passive roles. ",
+      "createdAt": "2022-02-23T03:19:21Z",
+      "updatedAt": "2022-04-01T15:26:09Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 8,
+      "id": "I_kwDOHDTni85GQFN5",
+      "title": "RTP over reliable streams or datagrams? ",
+      "url": "https://github.com/SpencerDawkins/sdp-rtp-quic-issues/issues/8",
+      "state": "OPEN",
+      "author": "aboba",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [
+        "duplicate",
+        "Presented to WG",
+        "Solution proposed"
+      ],
+      "body": "So far, implementers have largely chosen to utilize QUIC reliable streams for media transport, rather than QUIC datagrams.  This appears to be largely due to: \r\n\r\n1. A focus on use cases other than realtime conferencing (e.g. video ingestion or low latency streaming)\r\n2. A desire for simplicity. \r\n\r\nRealtime conferencing requires protocol standardization if it is desired to interoperate between a QUIC client and QUIC SFU from different vendors.  SFUs implement RTP today, so using RTP over QUIC makes the most sense for the conferencing scenario. \r\n\r\nHowever, low latency streaming scenarios typically involve a client downloading code from the cloud so interop is based on APIs rather than protocols.  So protocol interop isn't as important.  Also, in these scenarios, RTP limitations can be problematic (such as inability to transport significant amounts of synchronized data along with the frame (e.g. for AR/VR). \r\n\r\nI *think* this may be an argument for focusing on RTP over QUIC datagrams and *not* RTP over QUIC reliable streams. ",
+      "createdAt": "2022-02-23T03:33:30Z",
+      "updatedAt": "2022-05-19T18:16:34Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "SpencerDawkins",
+          "authorAssociation": "OWNER",
+          "body": "This is related to #3, but I'm leaving it open, to keep track of the discussion there. ",
+          "createdAt": "2022-05-16T15:46:55Z",
+          "updatedAt": "2022-05-16T15:46:55Z"
+        }
+      ]
+    },
+    {
+      "number": 9,
+      "id": "I_kwDOHDTni85GQFeZ",
+      "title": "QUIC for data exchange?",
+      "url": "https://github.com/SpencerDawkins/sdp-rtp-quic-issues/issues/9",
+      "state": "OPEN",
+      "author": "aboba",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [
+        "Presented to WG"
+      ],
+      "body": "P2P QUIC connections once established can be used for transport of both media and data.\r\n\r\nIs there a way in SDP to indicate a desire to exchange data over P2P QUIC? \r\n\r\nIn the P2P QUIC Origin Trial, we assumed that only a single QUIC connection needed to be established between two peers.  The type and format of data was assumed to be controlled by the application, so that there was no need to signal whether the data would be transported over reliable streams or datagrams, and either side could open a reliable stream or send a datagram. ",
+      "createdAt": "2022-02-23T03:39:37Z",
+      "updatedAt": "2022-05-17T22:12:30Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "SpencerDawkins",
+          "authorAssociation": "OWNER",
+          "body": "@aboba - are you thinking something like a parallel to WebRTC Data Channel, that would not require an SCTP implementation?",
+          "createdAt": "2022-03-23T22:00:12Z",
+          "updatedAt": "2022-03-23T22:00:12Z"
+        },
+        {
+          "author": "aboba",
+          "authorAssociation": "NONE",
+          "body": "In P2P QUIC, the two sides establish a QUIC connection using self-signed certificates and fingerprint verification, very similar to DTLS.  So the QUIC connection establishment SDP is well understood.  The question in my mind is what signaling is needed for what comes afterwards. \r\n\r\nIn the original [P2P QUIC API proposal ](https://webrtc.internaut.com/ortc/#quicstream*), after connection establishment either side could initiate QUIC reliable streams or send datagrams.   The responder receives an event on a new incoming stream and can read from the incoming datagram queue.  So there's no equivalent to the WebRTC data channel negotiation. \r\n\r\nThis might make sense for data, but for media typically the receiver needs to be set up beforehand to be ready to render the media appropriately.  For example, new participants may cause the gallery to be rearranged (e.g. from 2 x 2 to 3 x 3), and if the video tags have not been established or are not hooked up to MediaStreamTracks, incoming media could be dropped until the infrastructure is ready.  So that's why SDP O/A or other signaling is desirable.  ",
+          "createdAt": "2022-03-24T04:11:10Z",
+          "updatedAt": "2022-03-24T04:11:10Z"
+        },
+        {
+          "author": "SpencerDawkins",
+          "authorAssociation": "OWNER",
+          "body": "@aboba, so the point here is to tell the other side \"by the way, don't be surprised if I'm sending you data, that's not media at all, so you need to get ready to do something with data, too\", is that right?\r\n\r\nI think if you use two different connections, you don't have to do this in SDP, but if you're only using one connection that's already set up for RTP, it seems like SDP signalling would be required. ",
+          "createdAt": "2022-05-16T15:52:37Z",
+          "updatedAt": "2022-05-16T15:52:37Z"
+        },
+        {
+          "author": "aboba",
+          "authorAssociation": "NONE",
+          "body": "The problem for the receiver is knowing what to do with the data it receives.  Is it RTP/RTCP (in which case it needs to process it in the audio/video pipeline) or is it data that should be surfaced to the application?\r\n\r\nIn the [P2P QUIC trial ](https://developer.chrome.com/blog/rtcquictransport-api/) we left everything up to the application. But if the application doesn't want to bring its own RTP over QUIC stack, then you'd need a built-in way to demultiplex media from data.  Using multiple QUIC connections simplifies the multiplexing and would also make it possible to deploy distinct CC algorithms for media and data (what has been proposed in the W3C WebTransport WG).  On the other hand, it makes prioritizing data and media more complex and within WebRTC the trend has been to send everything on a single port (e.g. RTP/RTCP/STUN/TURN/DTLS/ZRTP) so as to minimize ICE issues.",
+          "createdAt": "2022-05-16T19:05:30Z",
+          "updatedAt": "2022-05-16T19:05:30Z"
+        },
+        {
+          "author": "SpencerDawkins",
+          "authorAssociation": "OWNER",
+          "body": "Hi, @aboba - this description is very clear, and helped me understand (at least some of) the issues better. \r\n\r\nDo you see a general solution being in scope for AVTCORE? My understanding from https://datatracker.ietf.org/doc/html/draft-ietf-avtcore-rfc7983bis is that we've just been getting lucky - recognizing that someone is going to want to add another protocol to be carried on the same connection, and then discovering that the surprise protocol just happens to be possible to demultiplex. Is that right?",
+          "createdAt": "2022-05-17T21:48:13Z",
+          "updatedAt": "2022-05-17T21:48:13Z"
+        },
+        {
+          "author": "aboba",
+          "authorAssociation": "NONE",
+          "body": "RFC7983bis is about multiplexing STUN/TURN/DTLS/RTP/RTCP/QUIC/ZRTP all on the same port. As long as QUIC greasing isn't negotiated, it seems possible. As for multiplexing RTP/RTCP along with data *within* QUIC, it could be done similarly to RFC 7983bis, with the first byte of the QUIC payload being used to distinguish RTP/RTCP/data. ",
+          "createdAt": "2022-05-17T22:12:30Z",
+          "updatedAt": "2022-05-17T22:12:30Z"
+        }
+      ]
+    },
+    {
+      "number": 10,
+      "id": "I_kwDOHDTni85GQYUn",
+      "title": "QUIC connection migration in case of path failure between two endpoints",
+      "url": "https://github.com/SpencerDawkins/sdp-rtp-quic-issues/issues/10",
+      "state": "OPEN",
+      "author": "SpencerDawkins",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [
+        "Presented to WG"
+      ],
+      "body": "Likely related to, but not a duplicate of, #4",
+      "createdAt": "2022-03-23T21:40:23Z",
+      "updatedAt": "2022-05-16T15:54:16Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "SpencerDawkins",
+          "authorAssociation": "OWNER",
+          "body": "This may be related to QUIC multipath operation, although that's too early to tell. ",
+          "createdAt": "2022-03-23T21:51:00Z",
+          "updatedAt": "2022-03-23T21:51:00Z"
+        },
+        {
+          "author": "SpencerDawkins",
+          "authorAssociation": "OWNER",
+          "body": "This could be handled in ICE, if we're using ICE ... :wink:",
+          "createdAt": "2022-05-16T15:54:16Z",
+          "updatedAt": "2022-05-16T15:54:16Z"
+        }
+      ]
+    },
+    {
+      "number": 11,
+      "id": "I_kwDOHDTni85GQZhN",
+      "title": "Decouple the RTP state machine and the QUIC state machine",
+      "url": "https://github.com/SpencerDawkins/sdp-rtp-quic-issues/issues/11",
+      "state": "OPEN",
+      "author": "SpencerDawkins",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [
+        "Presented to WG",
+        "Solution proposed"
+      ],
+      "body": "Each state machine currently assumes it is solely responsible for managing sending rates, without any knowledge of what the other plans to do",
+      "createdAt": "2022-03-23T21:46:23Z",
+      "updatedAt": "2022-05-17T18:22:51Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "SpencerDawkins",
+          "authorAssociation": "OWNER",
+          "body": "I think we have to assume that we'll be running one state machine - we just have to be intentional about picking on. \r\n\r\nI think this is related to, but not the same as, #1.",
+          "createdAt": "2022-05-16T15:56:48Z",
+          "updatedAt": "2022-05-16T15:56:48Z"
+        }
+      ]
+    }
+  ],
+  "pulls": []
+}
