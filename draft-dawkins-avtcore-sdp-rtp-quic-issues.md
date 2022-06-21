@@ -87,7 +87,7 @@ Readers are invited to open issues and send pull requests with contributed text 
 
 ## What AVP Profiles to Register
 
-This design issue was surprisingly difficult to resolve at first. The design choice was between
+This design issue was surprisingly difficult to resolve at first. The first design choice was between
 
 * Registering "insecure" AVP profiles, such as "QUIC/RTP/AVPF", because "secure AVP profiles, such as "QUIC/RTP/SAVPF", mean that the RTP payloads are encrypted using "Secure Real-time Transport Protocol (SRTP)" ({{RFC3711}}), which isn't necessary because RTP over QUIC payloads will already be encrypted by QUIC, and
 * Also registering "secure" AVP profiles, such as "QUIC/RTP/SAVPF", for various reasons, including
