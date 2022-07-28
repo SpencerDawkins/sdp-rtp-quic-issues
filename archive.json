@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2022-07-26T01:53:24.360713+00:00",
+  "timestamp": "2022-07-28T01:44:09.717873+00:00",
   "repo": "SpencerDawkins/sdp-rtp-quic-issues",
   "labels": [
     {
@@ -546,6 +546,42 @@
           "updatedAt": "2022-05-16T15:56:48Z"
         }
       ]
+    },
+    {
+      "number": 12,
+      "id": "I_kwDOHDTni85OmeEl",
+      "title": "Add registered profile including TCP/",
+      "url": "https://github.com/SpencerDawkins/sdp-rtp-quic-issues/issues/12",
+      "state": "OPEN",
+      "author": "SpencerDawkins",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [
+        "Presented to WG"
+      ],
+      "body": "From @rshpount in email on-list,\r\n\r\n> I will try to explain this again. What you are missing here is ICE-TCP (RFC 6544). \r\n> \r\n> Let's say a browser generates an offer. It would look something like this (I am skipping a bunch of attributes here, but this should be enough to convey the point):\r\n> m=audio 55493 UDP/QUIC/RTP/AVPF 111 63 103 104 9 0 8 106 105 13 110 112 113 126\r\n> c=IN IP4 192.168.80.1\r\n> a=candidate:88276966 1 udp 2122260223 192.168.80.1 55493 typ host generation 0 network-id 2\r\n> a=candidate:227749246 1 udp 2122194687 192.168.86.29 55494 typ host generation 0 network-id 1 network-cost 10\r\n> a=candidate:1270940438 1 tcp 1518280447 192.168.80.1 9 typ host tcptype active generation 0 network-id 2\r\n> a=candidate:1125175694 1 tcp 1518214911 192.168.86.29 9 typ host tcptype active generation 0 network-id 1 network-cost 10\r\n> \r\n> What we have here are two TCP candidates. The only protocol used there is the same one used over UDP, except with framing defined in RFC4571. It cannot be anything else since ICE can switch between any of those candidates during the nomination process, and communications should continue. It is not unusual for the first one or two packets to be delivered over TCP and subsequent packets over UDP. It cannot happen if the switch is between RTP-over-QUIC and DTLS-RTP. Furthermore, there is no way to define a switch between two unrelated protocols based on the type of ICE candidate used.\r\n> \r\n> Now, let's say the client is behind the UDP-restricted network. This means one of the TCP candidates gets nominated. Only the TCP candidate is left if another offer is sent after the nomination. This means the offer will look like this:\r\n> m=audio 9 TCP/QUIC/RTP/AVPF 111 63 103 104 9 0 8 106 105 13 110 112 113 126\r\n> c=IN IP4 192.168.80.1\r\n> a=candidate:1270940438 1 tcp 1518280447 192.168.80.1 9 typ host tcptype active generation 0 network-id 2\r\n> \r\n> You cannot use UDP/QUIC/RTP/AVPF since the connection is over TCP, not UDP. This is why you need to register this protocol name.\r\n> \r\n> I do not think any work needs to be done by the QUIC working group. No work was required for DTLS or SCTP. This is an ICE-specific issue and is quite different from a typical QUIC to HTTP/2 fallback.\r\n> \r\n> I hope this explains the issue. Otherwise, we can go into more detail during the IETF meeting.",
+      "createdAt": "2022-07-26T20:16:20Z",
+      "updatedAt": "2022-07-26T20:16:41Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 13,
+      "id": "I_kwDOHDTni85OmqpL",
+      "title": "How to ask for QUIC feedback",
+      "url": "https://github.com/SpencerDawkins/sdp-rtp-quic-issues/issues/13",
+      "state": "OPEN",
+      "author": "SpencerDawkins",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [
+        "Presented to WG"
+      ],
+      "body": "[draft-ietf-avtcore-rtp-over-quic](https://datatracker.ietf.org/doc/draft-ietf-avtcore-rtp-over-quic/) provides that an RTP over QUIC implementation can ask QUIC for transport layer feedback (timestamps, etc.) to use as a substitute for RTCP feedback.\r\n\r\nShould this appear in SDP as \"enable-transport-layer-feedback\", or something similar, or should the SDP name each piece of transport layer feedback that the RTP implementation expects to use?",
+      "createdAt": "2022-07-26T21:14:26Z",
+      "updatedAt": "2022-07-26T21:19:10Z",
+      "closedAt": null,
+      "comments": []
     }
   ],
   "pulls": []
